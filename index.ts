@@ -1,21 +1,29 @@
 import puppeteer, { Browser } from "puppeteer"
 import * as cheerio from "cheerio"
+import readCSV from "./readCSV"
 
 let browser: Browser | undefined
+if (!browser) {
+    console.log("browser!")
+
+    browser = await puppeteer.launch({
+        headless: true,
+        // executablePath: "/usr/bin/google-chrome",
+    })
+}
 
 async function fetchHTML(url: string) {
-    if (!browser) {
-        browser = await puppeteer.launch({
-            headless: true,
-            executablePath: "/usr/bin/google-chrome",
-        })
+    try {
+        const page = await browser!.newPage()
+        await page.goto(url, { waitUntil: "domcontentloaded" }) // Use domcontentloaded for faster wait
+        const html = await page.content()
+        await page.close()
+
+        return html
+    } catch (error) {
+        console.error(error)
+        throw Error
     }
-
-    const page = await browser.newPage()
-    await page.goto(url, { waitUntil: "networkidle0" }) // Use domcontentloaded for faster wait
-    const html = await page.content()
-
-    return html
 }
 
 const scrapeFirstPage = async (searchInputs: string[]) => {
@@ -38,25 +46,28 @@ const scrapeFirstPage = async (searchInputs: string[]) => {
             totalLinks = aTags.length
 
             return {
+                url,
                 totalAdWord,
                 totalLinks,
                 totalResults,
                 // html,
-                html: html.length,
+                htmlLength: html.length,
             }
         })
 
         const scrapedData = await Promise.all(promises)
-        console.log(scrapedData)
+        return scrapedData
     } catch (error) {
         console.error(error)
+        throw error
     } finally {
         if (browser) {
             await browser.close()
             browser = undefined
-            return
         }
     }
 }
 
-await scrapeFirstPage(["scrape google", "react", "vue"])
+const csvData = await readCSV("my_data.csv")
+const data = await scrapeFirstPage(csvData)
+console.log("🚀 ~ data:", data ? data : "Scrapping failed")
