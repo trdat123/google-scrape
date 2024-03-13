@@ -1,6 +1,6 @@
 import puppeteer, { Browser } from "puppeteer"
 import * as cheerio from "cheerio"
-import readCSV from "./readCSV"
+import readCSV from "./utils/readCSV"
 
 let browser: Browser | undefined
 if (!browser) {
