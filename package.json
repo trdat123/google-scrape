@@ -1,14 +1,25 @@
 {
-  "name": "google-scrape",
-  "module": "index.ts",
-  "type": "module",
-  "devDependencies": {
-    "@types/bun": "latest"
-  },
-  "peerDependencies": {
-    "typescript": "^5.0.0"
-  },
-  "dependencies": {
-    "puppeteer": "^22.4.1"
-  }
+    "name": "google-scrape",
+    "module": "index.ts",
+    "type": "module",
+    "scripts": {
+        "dev": "bun src/index.ts",
+        "db:generate": "drizzle-kit generate:pg",
+        "db:push": "drizzle-kit push:pg",
+        "db:drop": "drizzle-kit drop"
+    },
+    "devDependencies": {
+        "@types/bun": "^1.0.8",
+        "drizzle-kit": "^0.20.14"
+    },
+    "peerDependencies": {
+        "typescript": "^5.0.0"
+    },
+    "dependencies": {
+        "@vercel/postgres": "^0.7.2",
+        "cheerio": "^1.0.0-rc.12",
+        "drizzle-orm": "^0.30.1",
+        "postgres": "^3.4.3",
+        "puppeteer": "^22.4.1"
+    }
 }
