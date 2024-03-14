@@ -4,7 +4,9 @@
     "type": "module",
     "scripts": {
         "dev": "bun src/index.ts",
-        "generate": "drizzle-kit generate:pg"
+        "db:generate": "drizzle-kit generate:pg",
+        "db:push": "drizzle-kit push:pg",
+        "db:drop": "drizzle-kit drop"
     },
     "devDependencies": {
         "@types/bun": "^1.0.8",

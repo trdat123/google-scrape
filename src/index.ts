@@ -1,6 +1,8 @@
 import puppeteer, { Browser } from "puppeteer"
 import * as cheerio from "cheerio"
 import readCSV from "./utils/readCSV"
+import { addKeywordSet } from "./actions/addKeywordSet"
+import type { IKeyword } from "./types/IKeyword"
 
 let browser: Browser | undefined
 if (!browser) {
@@ -12,10 +14,10 @@ if (!browser) {
     })
 }
 
-async function fetchHTML(url: string) {
+const fetchHTML = async (url: string) => {
     try {
         const page = await browser!.newPage()
-        await page.goto(url, { waitUntil: "domcontentloaded" }) // Use domcontentloaded for faster wait
+        await page.goto(url, { waitUntil: "domcontentloaded" })
         const html = await page.content()
         await page.close()
 
@@ -26,32 +28,31 @@ async function fetchHTML(url: string) {
     }
 }
 
-const scrapeFirstPage = async (searchInputs: string[]) => {
+const scrapeFirstPage = async (searchInputs: string[]): Promise<IKeyword[]> => {
     try {
         const promises = searchInputs.map(async (input) => {
             const url = `https://www.google.com/search?q=${input.split(" ").join("+")}`
             const html = await fetchHTML(url)
             const $ = cheerio.load(html)
+            let totalAdWords: number
             let totalLinks: number
-            let totalAdWord: number
-            let totalResults: string
+            let resultStats: string
 
             const totalResultsTag = $("#result-stats")
-            totalResults = $(totalResultsTag).text().trim()
+            resultStats = $(totalResultsTag).text().trim()
 
             const adWordTags = $("#tvcap")
-            totalAdWord = adWordTags.length
+            totalAdWords = adWordTags.length
 
             const aTags = $("a")
             totalLinks = aTags.length
 
             return {
-                url,
-                totalAdWord,
+                keyword: input,
+                totalAdWords,
                 totalLinks,
-                totalResults,
-                // html,
-                htmlLength: html.length,
+                resultStats,
+                htmlString: encodeURIComponent(html),
             }
         })
 
@@ -70,4 +71,5 @@ const scrapeFirstPage = async (searchInputs: string[]) => {
 
 const csvData = await readCSV("my_data.csv")
 const data = await scrapeFirstPage(csvData)
-console.log("🚀 ~ data:", data ? data : "Scrapping failed")
+
+addKeywordSet(data)
