@@ -1,6 +1,6 @@
 import puppeteer, { Browser } from "puppeteer"
 import * as cheerio from "cheerio"
-import readCSV from "./utils/readCSV"
+import readCSV from "../test/readCSV"
 import { addKeywordSet } from "./actions/addKeywordSet"
 import type { IKeyword } from "./types/IKeyword"
 
@@ -69,7 +69,4 @@ const scrapeFirstPage = async (searchInputs: string[]): Promise<IKeyword[]> => {
     }
 }
 
-const csvData = await readCSV("my_data.csv")
-const data = await scrapeFirstPage(csvData)
-
-addKeywordSet(data)
+export default scrapeFirstPage

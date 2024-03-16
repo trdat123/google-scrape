@@ -1,14 +1,12 @@
-import { truncateString } from "../utils/truncateString"
+import { truncateString, truncateStringFromScrapeData } from "../utils/truncateString"
 import db from "./drizzle"
 import { keyword, keywordSet, user } from "./schema"
 
 let result = await db.select().from(keyword)
 
-result.forEach((e) => {
-    if (e.htmlString) e.htmlString = truncateString(e.htmlString, 40)
-})
+const truncatedData = truncateStringFromScrapeData(result)
 
-console.log(result)
+console.log(truncatedData)
 
 // await db.delete(keyword)
 // await db.delete(keywordSet)
