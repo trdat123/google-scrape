@@ -26,7 +26,7 @@ export const addKeywordSet = async (keywordArr: string[]) => {
 
         const keywordsData = await db.insert(keyword).values(scrapedData).returning()
 
-        const truncatedData = truncateStringFromScrapeData(scrapedData)
+        const truncatedData = truncateStringFromScrapeData(keywordsData)
 
         return truncatedData
     } catch (error) {

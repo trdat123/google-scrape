@@ -1,10 +1,11 @@
+import { eq } from "drizzle-orm"
 import db from "../db/drizzle"
 import { keyword } from "../db/schema"
-import { truncateString, truncateStringFromScrapeData } from "../utils/truncateString"
+import { truncateStringFromScrapeData } from "../utils/truncateString"
 
-export const getKeywordSet = async () => {
+const getKeywordSet = async (setId: number) => {
     try {
-        let result = await db.select().from(keyword)
+        let result = await db.select().from(keyword).where(eq(keyword.setId, setId))
 
         const truncatedData = truncateStringFromScrapeData(result)
 
@@ -14,4 +15,4 @@ export const getKeywordSet = async () => {
     }
 }
 
-getKeywordSet()
+export default getKeywordSet
