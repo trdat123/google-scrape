@@ -1,11 +1,12 @@
 import db from "./db/drizzle"
-import { keyword, keywordSet, user } from "./db/schema"
+import { keyword } from "./db/schema"
 import { addKeywordSet } from "./actions/addKeywordSet"
 import express from "express"
 import cors from "cors"
 import bodyParser from "body-parser"
-import { desc, eq } from "drizzle-orm"
+import { eq } from "drizzle-orm"
 import getKeywordSet from "./actions/getKeywordSet"
+import getKeywordSets from "./actions/getKeywordSets"
 
 export const app = express()
 const port = 8000
@@ -19,49 +20,11 @@ app.listen(port, () => {
 })
 
 app.get("/api/getKeywordSets", async (req, res) => {
-    try {
-        const { userId } = req.query
+    const { userEmail } = req.query
 
-        const result = await db
-            .select({
-                userName: user.name,
-                userEmail: user.email,
-                keywordSet: keywordSet.id,
-                createdAt: keywordSet.createdAt,
-                keyword: keyword.keyword,
-            })
-            .from(user)
-            .rightJoin(keywordSet, eq(user.id, keywordSet.authorId))
-            .leftJoin(keyword, eq(keywordSet.id, keyword.setId))
-            .where(eq(user.id, parseInt(userId as string)))
-            .orderBy(desc(keywordSet.createdAt))
+    const keywordSetsData = await getKeywordSets(userEmail as string)
 
-        const transformedData = result.reduce((acc: any, curr) => {
-            const index: number = acc.findIndex(
-                (entry: any) => entry.keywordSet === curr.keywordSet
-            )
-
-            if (index !== -1) {
-                acc[index].keywords.push(curr.keyword as string)
-                acc[index].totalKeywords++
-            } else {
-                acc.push({
-                    userName: curr.userName,
-                    userEmail: curr.userEmail,
-                    keywordSet: curr.keywordSet,
-                    createdAt: curr.createdAt,
-                    totalKeywords: 1,
-                    keywords: [curr.keyword as string],
-                })
-            }
-
-            return acc
-        }, [])
-
-        res.json(transformedData)
-    } catch (error) {
-        console.error(error)
-    }
+    res.json(keywordSetsData)
 })
 
 app.post("/api/addKeywordSet", async (req, res) => {
