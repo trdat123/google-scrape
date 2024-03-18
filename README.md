@@ -42,3 +42,5 @@ Due to sending env file manually. Make sure to add the dot symbol at the start o
 
 -   To run server: `bun dev`
 -   To run test: `bun test`
+
+(If there is a problem when run in WSL environment. It might be because of the scrape function needs to be specify executable path)
