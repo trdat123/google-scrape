@@ -7,7 +7,8 @@ let browser: Browser | undefined
 const fetchHTML = async (url: string) => {
     try {
         const page = await browser!.newPage()
-        await page.goto(url, { waitUntil: "networkidle0" })
+        await page.goto(url, { waitUntil: "domcontentloaded" })
+        // {waitUntil: "networkidle0", timeout: 0} for longer page load, but takes more time and has to set specific timeout
         const html = await page.content()
         await page.close()
 
@@ -41,7 +42,7 @@ const scrapeFirstPage = async (searchInputs: string[]): Promise<IKeyword[]> => {
             if (resultStats.length === 0) resultStats = "(No data in this page)"
 
             const adWordTags = $("#tvcap")
-            totalAdWords = adWordTags.length
+            totalAdWords = adWordTags.children().length
 
             const aTags = $("a")
             totalLinks = aTags.length
