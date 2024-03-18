@@ -6,12 +6,24 @@ import type { IKeyword } from "../types/IKeyword"
 import { eq } from "drizzle-orm"
 import { truncateStringFromScrapeData } from "../utils/truncateString"
 
-export const addKeywordSet = async (keywordArr: string[]) => {
+export const addKeywordSet = async (
+    keywordArr: string[],
+    userInfo: { userName: string; userEmail: string }
+) => {
     try {
-        const userData = await db
+        const { userName, userEmail } = userInfo
+
+        let userData = await db
             .select({ authorId: user.id })
             .from(user)
-            .where(eq(user.name, "test"))
+            .where(eq(user.email, userEmail))
+
+        if (userData.length == 0) {
+            userData = await db
+                .insert(user)
+                .values({ email: userEmail, name: userName })
+                .returning({ authorId: user.id })
+        }
 
         const setData = await db
             .insert(keywordSet)

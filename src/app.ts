@@ -28,7 +28,10 @@ app.get("/api/getKeywordSets", async (req, res) => {
 })
 
 app.post("/api/addKeywordSet", async (req, res) => {
-    const keywordSetData = await addKeywordSet(req.body)
+    const keywordSetData = await addKeywordSet(
+        req.body,
+        req.query as { userName: string; userEmail: string }
+    )
 
     if (!keywordSetData) res.status(400)
 
