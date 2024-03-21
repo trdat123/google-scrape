@@ -6,6 +6,7 @@ This project is for educational purpose.
 
 ### Front-end
 
+-   [Front-end source code](https://github.com/trdat123/google-scrape-fe)
 -   Front-end uses [Vite](https://vitejs.dev/) + [React](https://react.dev/) + [Bun](https://bun.sh/): Vite for starting local server. Bun for installing dependencies. Both of them are blazingly fast.
 -   UI library: [shadcn/ui](https://ui.shadcn.com/examples/mail) and [Tailwindcss](https://tailwindcss.com/)
 -   Authentication: [Auth0](https://auth0.com/)
